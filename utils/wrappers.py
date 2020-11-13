@@ -49,9 +49,22 @@ class ResizeWrapper(gym.ObservationWrapper):
         self.shape = shape
 
     def observation(self, observation):
-        from scipy.misc import imresize
+#        from scipy.misc import imresize
+#
+#        return imresize(observation, self.shape)
+        
+        # edit this as imresize is deprecated
+        # solution: https://github.com/raghakot/keras-vis/issues/209
+        
+#        print("Observation:", np.shape(np.array(observation)))
+#        print("self.shape:", self.shape)
 
-        return imresize(observation, self.shape)
+        # code research on cv2.resize
+        # https://blog.csdn.net/jningwei/article/details/76019940
+        import cv2
+        # need to specific as resize takes (width, height), which is (160, 120)
+        return cv2.resize(observation, (self.shape[1], self.shape[0]))
+        
 
 
 class NormalizeWrapper(gym.ObservationWrapper):
