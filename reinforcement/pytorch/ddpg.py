@@ -208,6 +208,7 @@ class DDPG(object):
             self.critic_optimizer.step()
 
             # Compute actor loss
+            # explaination of why it works: https://github.com/openai/baselines/issues/645
             actor_loss = -self.critic(state, self.actor(state)).mean()
 
             # Optimize the actor
