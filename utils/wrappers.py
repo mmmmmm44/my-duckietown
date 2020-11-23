@@ -2,39 +2,6 @@ import gym
 from gym import spaces
 import numpy as np
 
-from gym_duckietown.simulator import Simulator
-
-
-class MotionBlurWrapper(Simulator):
-    def __init__(self, env=None):
-        Simulator.__init__(self)
-        self.env = env
-        self.frame_skip = 3
-        self.env.delta_time = self.env.delta_time / self.frame_skip
-
-    def step(self, action: np.ndarray):
-        action = np.clip(action, -1, 1)
-        # Actions could be a Python list
-        action = np.array(action)
-        motion_blur_window = []
-        for _ in range(self.frame_skip):
-            obs = self.env.render_obs()
-            motion_blur_window.append(obs)
-            self.env.update_physics(action)
-
-        # Generate the current camera image
-
-        obs = self.env.render_obs()
-        motion_blur_window.append(obs)
-        obs = np.average(motion_blur_window, axis=0, weights=[0.8, 0.15, 0.04, 0.01])
-
-        misc = self.env.get_agent_info()
-
-        d = self.env._compute_done_reward()
-        misc["Simulator"]["msg"] = d.done_why
-
-        return obs, d.reward, d.done, misc
-
 
 class ResizeWrapper(gym.ObservationWrapper):
     def __init__(self, env=None, shape=(120, 160, 3)):
@@ -44,27 +11,12 @@ class ResizeWrapper(gym.ObservationWrapper):
             self.observation_space.low[0, 0, 0],
             self.observation_space.high[0, 0, 0],
             shape,
-            dtype=self.observation_space.dtype,
-        )
+            dtype=self.observation_space.dtype)
         self.shape = shape
 
     def observation(self, observation):
-#        from scipy.misc import imresize
-#
-#        return imresize(observation, self.shape)
-        
-        # edit this as imresize is deprecated
-        # solution: https://github.com/raghakot/keras-vis/issues/209
-        
-#        print("Observation:", np.shape(np.array(observation)))
-#        print("self.shape:", self.shape)
-
-        # code research on cv2.resize
-        # https://blog.csdn.net/jningwei/article/details/76019940
-        import cv2
-        # need to specific as resize takes (width, height), which is (160, 120)
-        return cv2.resize(observation, (self.shape[1], self.shape[0]))
-        
+        from PIL import Image
+        return np.array(Image.fromarray(observation).resize(self.shape[0:2]))
 
 
 class NormalizeWrapper(gym.ObservationWrapper):
@@ -90,8 +42,7 @@ class ImgWrapper(gym.ObservationWrapper):
             self.observation_space.low[0, 0, 0],
             self.observation_space.high[0, 0, 0],
             [obs_shape[2], obs_shape[0], obs_shape[1]],
-            dtype=self.observation_space.dtype,
-        )
+            dtype=self.observation_space.dtype)
 
     def observation(self, observation):
         return observation.transpose(2, 0, 1)
@@ -112,11 +63,11 @@ class DtRewardWrapper(gym.RewardWrapper):
         return reward
 
 
-# this is needed because at max speed the duckie can't turn anymore
+# Deprecated
 class ActionWrapper(gym.ActionWrapper):
     def __init__(self, env):
         super(ActionWrapper, self).__init__(env)
 
     def action(self, action):
-        action_ = [action[0] * 0.8, action[1]]
+        action_ = [action[0], action[1]]
         return action_
