@@ -1,7 +1,11 @@
 # my-duckietown
 The duckietown project file for ENGG3414, only pytorch ddpg part.
 
-Fixed the use of deprecated libary in utils/wrappers.py
+Rebuilt the whole package with the latest suggested template in slack
+
+Make sure that you follow the installation procedures in the gym-duckietown page before using this package
+
+Link: https://github.com/duckietown/gym-duckietown/tree/master
 
 ## Usage
 
