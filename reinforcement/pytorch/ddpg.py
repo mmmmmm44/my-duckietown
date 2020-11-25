@@ -67,7 +67,8 @@ class ActorCNN(nn.Module):
         x = self.bn2(self.lr(self.conv2(x)))
         x = self.bn3(self.lr(self.conv3(x)))
         x = self.bn4(self.lr(self.conv4(x)))
-        x = x.view(x.size(0), -1)  # flatten
+        # x = x.view(x.size(0), -1)  # flatten
+        x = x.reshape((x.size(0), -1))
         x = self.dropout(x)
         x = self.lr(self.lin1(x))
 
@@ -129,7 +130,8 @@ class CriticCNN(nn.Module):
         x = self.bn2(self.lr(self.conv2(x)))
         x = self.bn3(self.lr(self.conv3(x)))
         x = self.bn4(self.lr(self.conv4(x)))
-        x = x.view(x.size(0), -1)  # flatten
+        # x = x.view(x.size(0), -1)  # flatten
+        x = x.reshape((x.size(0), -1))
         x = self.lr(self.lin1(x))
         x = self.lr(self.lin2(torch.cat([x, actions], 1)))  # c
         x = self.lin3(x)
@@ -153,7 +155,7 @@ class DDPG(object):
             self.flat = False
             self.actor = ActorCNN(action_dim, max_action).to(device)
             self.actor_target = ActorCNN(action_dim, max_action).to(device)
-        
+
         print("Initialized Actor")
         self.actor_target.load_state_dict(self.actor.state_dict())
         self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=1e-4)
@@ -228,7 +230,7 @@ class DDPG(object):
         print("Saved Actor")
         torch.save(self.critic.state_dict(), '{}/{}_critic.pth'.format(directory, filename))
         print("Saved Critic")
-        
+
     def load(self, filename, directory):
         self.actor.load_state_dict(torch.load('{}/{}_actor.pth'.format(directory, filename), map_location=device))
         self.critic.load_state_dict(torch.load('{}/{}_critic.pth'.format(directory, filename), map_location=device))

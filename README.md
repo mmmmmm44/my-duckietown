@@ -24,3 +24,7 @@ python3 train_reinforcement.py
 Feel free to modify the hyper-parameters in the train_reinforcement.py
 
 Also can modify the image preprocessing part in utils/wrappers.py
+
+Update a tiny bit of codes so that it can run in colab
+
+Note that colab will not automatically save things, so remember to download your training and model code for further reference.
