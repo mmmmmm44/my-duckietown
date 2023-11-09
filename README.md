@@ -1,5 +1,5 @@
 # my-duckietown
-The duckietown project file for ENGG3414, only pytorch ddpg part.
+The duckietown project file for COMP3414 Experiential Learning on Artificial Intelligence and Robotics, only pytorch ddpg part.
 
 Rebuilt the whole package with the latest suggested template in slack
 
